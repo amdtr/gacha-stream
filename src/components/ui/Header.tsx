@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { TofuIcon } from '../icons/TofuIcon';
 import { Volume2, VolumeX, RotateCcw } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 export const TofuIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
     <svg

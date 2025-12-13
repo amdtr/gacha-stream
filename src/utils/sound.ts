@@ -107,7 +107,7 @@ export const playSound = (type: SoundEffectType) => {
             chord.forEach((freq, i) => {
                 const t = now + i * 0.05;
                 // Main tone
-                const o = createOsc('triangle', freq, t, 1.5, 0.2, 0.01);
+                createOsc('triangle', freq, t, 1.5, 0.2, 0.01);
                 // Harmonics
                 createOsc('sine', freq * 2, t, 1.5, 0.1, 0.01);
             });

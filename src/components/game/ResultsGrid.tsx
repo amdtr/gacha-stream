@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
 import { TofuIcon } from '../icons/TofuIcon';
 import { SkipForward } from 'lucide-react';

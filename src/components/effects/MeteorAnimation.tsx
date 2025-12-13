@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { CardData } from '../../types';
 import gacha4star from '../../assets/gacha4star.mp4';
