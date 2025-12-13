@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { CardData, CardType } from '../types';
 import { playSound } from '../utils/sound';
 
-const DEFAULT_MAX_PITY = 60;
+const DEFAULT_MAX_PITY = 42;
 
 export const useGachaGame = () => {
     const [items, setItems] = useState<string[]>([]);

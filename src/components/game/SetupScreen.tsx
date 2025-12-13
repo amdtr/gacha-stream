@@ -46,7 +46,7 @@ export const SetupScreen = ({
                             min="1"
                             max="999"
                             value={maxPity}
-                            onChange={(e) => setMaxPity(parseInt(e.target.value) || 60)}
+                            onChange={(e) => setMaxPity(parseInt(e.target.value) || 42)}
                             className="w-full bg-white/5 text-amber-100 p-3 rounded-xl border border-white/10 focus:border-amber-500/50 outline-none font-fantasy transition-all focus:bg-white/10"
                         />
                     </div>
