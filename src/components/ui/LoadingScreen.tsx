@@ -9,6 +9,7 @@ interface LoadingScreenProps {
 
 export const LoadingScreen = ({ assets, onComplete }: LoadingScreenProps) => {
     const [progress, setProgress] = useState(0);
+    const [loadedCount, setLoadedCount] = useState(0);
 
     useEffect(() => {
         let isMounted = true;
@@ -24,28 +25,19 @@ export const LoadingScreen = ({ assets, onComplete }: LoadingScreenProps) => {
 
             // Calculate total bytes expected and loaded
             // For files where total is unknown (yet or ever), we can't sum cleanly.
-            // Strategy: Assume equal weight? No, size matters.
-            // Strategy: Sum the ones we know.
+            // Strategy: Average percent across all files (Each file = 1/Nth of bar)
+            // This prevents jumps when new files start and add to the 'total bytes' denominator.
+            const totalPercent = resources.reduce((acc, r) => {
+                const p = r.total > 0 ? (r.loaded / r.total) : (r.done ? 1 : 0);
+                return acc + p;
+            }, 0);
 
-            const definedTotals = resources.reduce((acc, r) => acc + r.total, 0);
-            const definedLoaded = resources.reduce((acc, r) => acc + r.loaded, 0);
+            const overallProgress = (totalPercent / resources.length) * 100;
+            setProgress(Math.round(overallProgress));
 
-            // If we have no totals yet, progress is 0.
-            // If we have some, we use what we have.
-
-            // Fallback for when Total is 0 (e.g. gzip or chunked without content-length)
-            // If local dev, content-length might be missing.
-            // We can track "files completed" as a baseline.
-            const filesCompleted = resources.filter(r => r.done).length;
-            const fileProgress = (filesCompleted / resources.length) * 100;
-
-            if (definedTotals > 0) {
-                const byteProgress = (definedLoaded / definedTotals) * 100;
-                // Average them? or trust bytes? Trust bytes if significant.
-                setProgress(Math.round(byteProgress));
-            } else {
-                setProgress(Math.round(fileProgress));
-            }
+            // Update count text
+            const completedCount = resources.filter(r => r.done).length;
+            setLoadedCount(completedCount);
         };
 
         const loadFile = (index: number) => {
@@ -64,12 +56,12 @@ export const LoadingScreen = ({ assets, onComplete }: LoadingScreenProps) => {
 
                 xhr.onload = () => {
                     resources[index].done = true;
-                    // If total was never set (no content-length), set it to loaded size
-                    if (resources[index].total === 0) {
+                    // If total was never set (no content-length), set it to loaded size or just mark done
+                    if (resources[index].total === 0 && xhr.response) {
                         resources[index].total = xhr.response.size;
                         resources[index].loaded = xhr.response.size;
-                    } else {
-                        resources[index].loaded = resources[index].total; // Ensure 100%
+                    } else if (resources[index].total > 0) {
+                        resources[index].loaded = resources[index].total;
                     }
                     updateProgress();
                     resolve();
@@ -78,6 +70,7 @@ export const LoadingScreen = ({ assets, onComplete }: LoadingScreenProps) => {
                 xhr.onerror = () => {
                     console.error(`Failed to load ${resources[index].url}`);
                     resources[index].done = true; // Mark done to continue
+                    updateProgress();
                     resolve();
                 };
 
@@ -114,7 +107,7 @@ export const LoadingScreen = ({ assets, onComplete }: LoadingScreenProps) => {
                 </div>
 
                 <div className="flex justify-between w-full text-xs text-amber-200/60 font-fantasy tracking-widest">
-                    <span>Loading...</span>
+                    <span>Checking Fates... ({loadedCount}/{assets.length})</span>
                     <span>{progress}%</span>
                 </div>
             </div>
