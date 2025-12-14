@@ -1,5 +1,6 @@
 
 import { AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 
 // Components
 import { GameLayout } from './components/layout/GameLayout';
@@ -9,14 +10,36 @@ import { HistorySidebar } from './components/game/HistorySidebar';
 import { ResultsGrid } from './components/game/ResultsGrid';
 import { Controls } from './components/game/Controls';
 import { MeteorAnimation } from './components/effects/MeteorAnimation';
+import { LoadingScreen } from './components/ui/LoadingScreen';
 
 // Hooks
 import { useGachaGame } from './hooks/useGachaGame';
 import { useAudio } from './hooks/useAudio';
 
+// Assets for preloading
+import bgVideo from './assets/bg.mp4';
+import gacha4Video from './assets/gacha4star.mp4';
+import gacha5Video from './assets/gacha5star.mp4';
+// fantasy-bgm.mp3 is in public folder
+
 export default function GachaSimulator() {
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
   const game = useGachaGame();
   const audio = useAudio(game.isWishing);
+
+  if (!assetsLoaded) {
+    return (
+      <LoadingScreen
+        assets={[
+          bgVideo,
+          gacha4Video,
+          gacha5Video,
+          '/fantasy-bgm.mp3'
+        ]}
+        onComplete={() => setAssetsLoaded(true)}
+      />
+    );
+  }
 
   return (
     <GameLayout>
